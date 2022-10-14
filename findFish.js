@@ -1,9 +1,6 @@
-const argv = require("minimist-lite")(process.argv.slice(2));
 const mongoose = require("mongoose");
 
-!argv.c
-  ? console.log("Nothing was saved. Please provide a category.")
-  : main().catch((err) => console.log(err));
+main().catch((err) => console.log(err));
 
 async function main() {
   await mongoose.connect("mongodb://localhost:27017/shop3");
@@ -17,16 +14,17 @@ async function main() {
 
   const Fish = mongoose.model("fish", fishSchema);
 
-  const fish = Fish({
-    name: argv.n,
-    description: argv.d,
-    price: argv.p,
-    category: argv.c,
-  });
-
-  await fish.save();
-
-  console.log("Successfully added");
+  const results = await Fish.find({});
+  console.log(`${results.length} fish found:`);
+  results.forEach((result) =>
+    console.log(`
+  name: ${result.name}
+  id: ${result._id}
+  price: ${result.price}
+  description: ${result.description}
+  category: ${result.category}
+  `)
+  );
 
   process.exit();
 }
